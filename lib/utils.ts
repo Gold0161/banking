@@ -1,8 +1,15 @@
 /* eslint-disable no-prototype-builtins */
+/* eslint-disable no-prototype-builtins */
 import { type ClassValue, clsx } from "clsx";
 import qs from "query-string";
 import { twMerge } from "tailwind-merge";
 import { z } from "zod";
+import {
+  CURRENCY_USD,
+  LOCALE_EN_US,
+  TRANSACTION_STATUS_PROCESSING,
+  TRANSACTION_STATUS_SUCCESS,
+} from "@/constants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -39,22 +46,22 @@ export const formatDateTime = (dateString: Date) => {
   };
 
   const formattedDateTime: string = new Date(dateString).toLocaleString(
-    "en-US",
+    LOCALE_EN_US,
     dateTimeOptions
   );
 
   const formattedDateDay: string = new Date(dateString).toLocaleString(
-    "en-US",
+    LOCALE_EN_US,
     dateDayOptions
   );
 
   const formattedDate: string = new Date(dateString).toLocaleString(
-    "en-US",
+    LOCALE_EN_US,
     dateOptions
   );
 
   const formattedTime: string = new Date(dateString).toLocaleString(
-    "en-US",
+    LOCALE_EN_US,
     timeOptions
   );
 
@@ -67,9 +74,9 @@ export const formatDateTime = (dateString: Date) => {
 };
 
 export function formatAmount(amount: number): string {
-  const formatter = new Intl.NumberFormat("en-US", {
+  const formatter = new Intl.NumberFormat(LOCALE_EN_US, {
     style: "currency",
-    currency: "USD",
+    currency: CURRENCY_USD,
     minimumFractionDigits: 2,
   });
 
@@ -140,18 +147,20 @@ export function countTransactionCategories(
   transactions &&
     transactions.forEach((transaction) => {
       // Extract the category from the transaction
-      const category = transaction.category;
+      if (transaction && transaction.category) {
+        const category = transaction.category;
 
-      // If the category exists in the categoryCounts object, increment its count
-      if (categoryCounts.hasOwnProperty(category)) {
-        categoryCounts[category]++;
-      } else {
-        // Otherwise, initialize the count to 1
-        categoryCounts[category] = 1;
+        // If the category exists in the categoryCounts object, increment its count
+        if (categoryCounts.hasOwnProperty(category)) {
+          categoryCounts[category]++;
+        } else {
+          // Otherwise, initialize the count to 1
+          categoryCounts[category] = 1;
+        }
+
+        // Increment total count
+        totalCount++;
       }
-
-      // Increment total count
-      totalCount++;
     });
 
   // Convert the categoryCounts object to an array of objects
@@ -171,10 +180,21 @@ export function countTransactionCategories(
 
 export function extractCustomerIdFromUrl(url: string) {
   // Split the URL string by '/'
+  if (!url || typeof url !== 'string' || url.trim() === "") {
+    return ""; // Return empty string for invalid input
+  }
+  // Split the URL string by '/'
   const parts = url.split("/");
 
   // Extract the last part, which represents the customer ID
+  if (parts.length === 0) {
+    return ""; // Should not happen if url is non-empty, but as a safeguard
+  }
   const customerId = parts[parts.length - 1];
+
+  if (customerId.trim() === "") {
+    return ""; // Return empty string if the extracted ID is empty
+  }
 
   return customerId;
 }
@@ -192,7 +212,7 @@ export const getTransactionStatus = (date: Date) => {
   const twoDaysAgo = new Date(today);
   twoDaysAgo.setDate(today.getDate() - 2);
 
-  return date > twoDaysAgo ? "Processing" : "Success";
+  return date > twoDaysAgo ? TRANSACTION_STATUS_PROCESSING : TRANSACTION_STATUS_SUCCESS;
 };
 
 export const authFormSchema = (type: string) => z.object({

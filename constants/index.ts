@@ -141,3 +141,22 @@ export const transactionCategoryStyles = {
     chipBackgroundColor: "bg-inherit",
   },
 };
+
+export const APPWRITE_SESSION_COOKIE = 'appwrite-session';
+export const APPWRITE_CURRENT_SESSION = 'current';
+export const PLAID_PRODUCTS_AUTH = 'auth';
+export const PLAID_COUNTRY_CODES_US = 'US';
+export const PLAID_LANGUAGE_EN = 'en';
+export const DWOLLA_PROCESSOR_NAME = 'dwolla';
+export const COOKIE_PATH_DEFAULT = '/';
+export const COOKIE_SAMESITE_STRICT = 'strict';
+export const TRANSACTION_TYPE_DEBIT = 'debit';
+export const TRANSACTION_TYPE_CREDIT = 'credit';
+export const DWOLLA_ENV_SANDBOX = 'sandbox';
+export const DWOLLA_ENV_PRODUCTION = 'production';
+export const CURRENCY_USD = 'USD';
+export const TRANSACTION_CHANNEL_ONLINE = 'online';
+export const TRANSACTION_CATEGORY_TRANSFER = 'Transfer';
+export const LOCALE_EN_US = 'en-US';
+export const TRANSACTION_STATUS_PROCESSING = 'Processing';
+export const TRANSACTION_STATUS_SUCCESS = 'Success';

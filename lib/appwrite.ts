@@ -2,13 +2,26 @@
 
 import { Client, Account, Databases, Users } from "node-appwrite";
 import { cookies } from "next/headers";
+import { APPWRITE_SESSION_COOKIE } from "@/constants";
+
+// Helper function to get and validate environment variables
+const getRequiredEnvVariable = (key: string): string => {
+  const value = process.env[key];
+  if (!value) {
+    throw new Error(`Missing required environment variable: ${key}`);
+  }
+  return value;
+};
 
 export async function createSessionClient() {
-  const client = new Client()
-    .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!)
-    .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT!);
+  const endpoint = getRequiredEnvVariable('NEXT_PUBLIC_APPWRITE_ENDPOINT');
+  const projectId = getRequiredEnvVariable('NEXT_PUBLIC_APPWRITE_PROJECT');
 
-  const session = cookies().get("appwrite-session");
+  const client = new Client()
+    .setEndpoint(endpoint)
+    .setProject(projectId);
+
+  const session = cookies().get(APPWRITE_SESSION_COOKIE);
 
   if (!session || !session.value) {
     throw new Error("No session");
@@ -24,10 +37,14 @@ export async function createSessionClient() {
 }
 
 export async function createAdminClient() {
+  const endpoint = getRequiredEnvVariable('NEXT_PUBLIC_APPWRITE_ENDPOINT');
+  const projectId = getRequiredEnvVariable('NEXT_PUBLIC_APPWRITE_PROJECT');
+  const apiKey = getRequiredEnvVariable('NEXT_APPWRITE_KEY');
+
   const client = new Client()
-    .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!)
-    .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT!)
-    .setKey(process.env.NEXT_APPWRITE_KEY!);
+    .setEndpoint(endpoint)
+    .setProject(projectId)
+    .setKey(apiKey);
 
   return {
     get account() {
